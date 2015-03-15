@@ -1,2 +1,4 @@
-/config.js
+/config/config.js
+/config/channels/*
+!/config/channels/default.example.js
 node_modules

@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var WebSocketClient = require('websocket').client;
 
-var BeamChatMessage = require('./chat/message');
+var BeamChatMessage = require('./message');
 
 //api = BeamAPI
 function BeamChatAPI(api, channelID, autoReconnect) {

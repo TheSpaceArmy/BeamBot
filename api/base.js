@@ -52,7 +52,7 @@ BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
 
 BeamAPI.prototype.login = function () {
 	if(this.isLoggedIn) {
-		return Promise.resolve();
+		return Promise.resolve(this.currentUser);
 	}
 	var self = this;
 	return this._apiRequest('POST', 'users/login', {
@@ -61,6 +61,7 @@ BeamAPI.prototype.login = function () {
 	}, true).then(function(data) {
 		self.isLoggedIn = true;
 		self.currentUser = data;
+		return data;
 	}).catch(function(err) {
 		if(err instanceof APIError && err.code == 401) {
 			err.message = 'Username or password invalid';
