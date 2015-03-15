@@ -1,0 +1,22 @@
+{
+  "name": "BeamBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:Doridian/beambot.git"
+  },
+  "author": "Doridian",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^2.9.14",
+    "lodash": "^3.5.0",
+    "request": "^2.53.0",
+    "tough-cookie": "^0.12.1",
+    "websocket": "^1.0.17"
+  }
+}
