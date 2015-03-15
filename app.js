@@ -6,7 +6,7 @@ var BeamChatAPI = require('./api/chat');
 var api = new BeamAPI(config.username, config.password);
 var chat = new BeamChatAPI(api, 127, true);
 
-chat.onChatMessage(function(msg) {
+chat.on('ChatMessage', function(msg) {
 	if(msg.user.name === 'Core') {
 		msg.delete();
 	}

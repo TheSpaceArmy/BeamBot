@@ -16,17 +16,13 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 	this.methodsWaitingForReply = {};
 	this.connectionHandlers = [];
 
-	this.eventHandlers = {
-		'ChatMessage': [
-			function(data) {
-				var msg = new BeamChatMessage(self, data);
-				_.forEach(self.chatMessageHandlers, function(handler) {
-					handler(msg);
-				});
-			}
-		]
+	this._eventPreprocessors = {
+		ChatMessage: function (data) {
+			return new BeamChatMessage(self, data);
+		}
 	};
-	this.chatMessageHandlers = [];
+
+	this.eventHandlers = {};
 	this.replyErrorHandlers = [];
 }
 
@@ -46,10 +42,6 @@ BeamChatAPI.prototype.on = function (event, callback) {
 	} else {
 		this.eventHandlers[event] = [callback];
 	}
-};
-
-BeamChatAPI.prototype.onChatMessage = function (callback) {
-	this.chatMessageHandlers.push(callback);
 };
 
 BeamChatAPI.prototype.onReplyError = function (callback) {
@@ -73,8 +65,13 @@ BeamChatAPI.prototype._onWSData = function (data) {
 			}
 			break;
 		case 'event':
-			_.forEach(this.eventHandlers[data.event], function (handler) {
-				handler(data.data);
+			var eventName = data.event;
+			var eventData = data.data;
+			if(this._eventPreprocessors[eventName]) {
+				eventData = this._eventPreprocessors[eventName](eventData);
+			}
+			_.forEach(this.eventHandlers[eventName], function (handler) {
+				handler(eventData);
 			});
 			break;
 	}
