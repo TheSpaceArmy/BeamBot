@@ -2,8 +2,12 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var WebSocketClient = require('websocket').client;
 
+var BeamChatMessage = require('./chat/message');
+
 //api = BeamAPI
 function BeamChatAPI(api, channelID, autoReconnect) {
+	var self = this;
+
 	this.api = api;
 	this.channelID = channelID;
 	this.autoReconnect = autoReconnect !== false;
@@ -12,7 +16,17 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 	this.methodsWaitingForReply = {};
 	this.connectionHandlers = [];
 
-	this.eventHandlers = [];
+	this.eventHandlers = {
+		'ChatMessage': [
+			function(data) {
+				var msg = new BeamChatMessage(self, data);
+				_.forEach(self.chatMessageHandlers, function(handler) {
+					handler(msg);
+				});
+			}
+		]
+	};
+	this.chatMessageHandlers = [];
 	this.replyErrorHandlers = [];
 }
 
@@ -32,6 +46,10 @@ BeamChatAPI.prototype.on = function (event, callback) {
 	} else {
 		this.eventHandlers[event] = [callback];
 	}
+};
+
+BeamChatAPI.prototype.onChatMessage = function (callback) {
+	this.chatMessageHandlers.push(callback);
 };
 
 BeamChatAPI.prototype.onReplyError = function (callback) {
