@@ -28,7 +28,7 @@ api.login().then(function (user) {
 						if(cmd) {
 							if(commands[cmd]) {
 								commands[cmd].run(msg).catch(function(err) {
-									console.log(err);
+									console.log('Command error:', err);
 								});
 							} else {
 								msg.reply('Command not found');
