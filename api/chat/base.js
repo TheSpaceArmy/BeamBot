@@ -16,7 +16,7 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 	this.methodsWaitingForReply = {};
 	this.connectionHandlers = [];
 
-	this._eventPreprocessors = {
+	this.eventPreprocessors = {
 		ChatMessage: function (data) {
 			return new BeamChatMessage(self, data);
 		}
@@ -26,14 +26,14 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 	this.replyErrorHandlers = [];
 }
 
-BeamChatAPI.prototype._announceConnection = function (success) {
-	_.forEach(this.connectionHandlers, function(handler) {
+function announceConnection (self, success) {
+	_.forEach(self.connectionHandlers, function(handler) {
 		var handler = success ? handler.success : handler.fail;
 		if(handler) {
 			handler();
 		}
 	});
-	this.connectionHandlers = [];
+	self.connectionHandlers = [];
 };
 
 BeamChatAPI.prototype.on = function (event, callback) {
@@ -48,12 +48,12 @@ BeamChatAPI.prototype.onReplyError = function (callback) {
 	this.replyErrorHandlers.push(callback);
 };
 
-BeamChatAPI.prototype._onWSData = function (data) {
+function onWSData (self, data) {
 	switch(data.type) {
 		case 'reply':
-			if(this.methodsWaitingForReply[data.id]) {
-				this.methodsWaitingForReply[data.id](data);
-				delete this.methodsWaitingForReply[data.id];
+			if(self.methodsWaitingForReply[data.id]) {
+				self.methodsWaitingForReply[data.id](data);
+				delete self.methodsWaitingForReply[data.id];
 			} else {
 				if(data.error) {
 					_.forEach(this.replyErrorHandlers, function (handler) {
@@ -67,20 +67,19 @@ BeamChatAPI.prototype._onWSData = function (data) {
 		case 'event':
 			var eventName = data.event;
 			var eventData = data.data;
-			if(this._eventPreprocessors[eventName]) {
-				eventData = this._eventPreprocessors[eventName](eventData);
+			if(self.eventPreprocessors[eventName]) {
+				eventData = self.eventPreprocessors[eventName](eventData);
 			}
-			_.forEach(this.eventHandlers[eventName], function (handler) {
+			_.forEach(self.eventHandlers[eventName], function (handler) {
 				handler(eventData);
 			});
 			break;
 	}
 };
 
-BeamChatAPI.prototype._sendMethod = function (method, arguments, expectsReply) {
-	var methodCallID = this.methodCallID++;
-	var self = this;
-	return this._sendData({
+function sendMethod (self, method, arguments, expectsReply) {
+	var methodCallID = self.methodCallID++;
+	return sendData(self, {
 		type: 'method',
 		method: method,
 		arguments: arguments,
@@ -100,32 +99,31 @@ BeamChatAPI.prototype._sendMethod = function (method, arguments, expectsReply) {
 	});
 };
 
-BeamChatAPI.prototype._websocketReconnect = function () {
-	this.websocketConnection = null;
-	this.websocket = null;
+function websocketReconnect (self) {
+	self.websocketConnection = null;
+	self.websocket = null;
 
-	if(!this.canBeConnected || !this.autoReconnect) {
-		this.canBeConnected = false;
+	if(!self.canBeConnected || !self.autoReconnect) {
+		self.canBeConnected = false;
 		return;
 	}
 
-	this.connect();
+	self.connect();
 };
 
-BeamChatAPI.prototype._sendData = function (data) {
-	var self = this;
-	if(!this.websocket || !this.websocketConnection) {
-		return this.connect().then(function() {
-			return self._sendData(data);
+function sendData (self, data) {
+	if(!self.websocket || !self.websocketConnection) {
+		return self.connect().then(function() {
+			return sendData(self, data);
 		});
 	}
 
-	this.websocketConnection.sendUTF(JSON.stringify(data));
+	self.websocketConnection.sendUTF(JSON.stringify(data));
 	return Promise.resolve();
 };
 
 BeamChatAPI.prototype.sendMessage = function (msg) {
-	return this._sendMethod('msg', [msg]);
+	return sendMethod(this, 'msg', [msg]);
 };
 
 BeamChatAPI.prototype.close = function () {
@@ -167,21 +165,22 @@ BeamChatAPI.prototype.connect = function () {
 					return;
 				}
 				self.websocketConnection = connection;
-				connection.on('error', function (err) { 
-					self._websocketReconnect();
+				connection.on('error', function (err) {
+					console.log('[chat] error', err);
+					websocketReconnect(self);
 				});
-				connection.on('close', function (err) { 
-					self._websocketReconnect();
+				connection.on('close', function () { 
+					websocketReconnect(self);
 				});
 				connection.on('message', function (data) {
-					self._onWSData(JSON.parse(data.utf8Data));
+					onWSData(self, JSON.parse(data.utf8Data));
 				});
-				self._announceConnection(true);
-				resolve(self._sendMethod('auth', [self.channelID, self.api.currentUser.id, data.authkey], true));
+				announceConnection(self, true);
+				resolve(sendMethod(self, 'auth', [self.channelID, self.api.currentUser.id, data.authkey], true));
 			});
 			self.websocket.on('connectFailed', function(err) {
-				self._websocketReconnect();
-				self._announceConnection(false);
+				websocketReconnect(self);
+				announceConnection(self, false);
 				reject(err);
 			});
 			self.websocket.connect(endpoint);
