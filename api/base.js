@@ -109,4 +109,8 @@ BeamAPI.prototype._userApiRequest = function (method,  url, data) {
 	return userApiRequest(this, method, url, data);
 };
 
+BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
+	return apiRequest(this, method, url, data, noRetryOn403);
+};
+
 module.exports = BeamAPI;
