@@ -6,7 +6,7 @@ function PingCommand(config) {
 Command.inherit(PingCommand);
 
 PingCommand.prototype.run = function(msg) {
-	msg.reply('Pong');
+	return msg.reply('Pong');
 };
 
 module.exports = PingCommand;

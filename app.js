@@ -27,7 +27,9 @@ api.login().then(function (user) {
 						var cmd = cmdArgs.shift().toLowerCase();
 						if(cmd) {
 							if(commands[cmd]) {
-								commands[cmd].run(msg);
+								commands[cmd].run(msg).catch(function(err) {
+									console.log(err);
+								});
 							} else {
 								msg.reply('Command not found');
 							}

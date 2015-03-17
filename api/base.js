@@ -63,10 +63,6 @@ function apiRequest(self, method, url, data, noRetryOn403) {
 			throw new APIError(response.statusCode, body);
 		}
 
-		if(_.isString(body)) {
-			return JSON.parse(body);
-		}
-
 		return body;
 	});
 };
