@@ -1,6 +1,6 @@
 'use strict';
 
-var Command = require('../command.js');
+var Command = require('../../../command.js');
 
 function DeleteMeCommand () {
 	Command.ctor(this, 'deleteme');

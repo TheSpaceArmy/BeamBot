@@ -4,9 +4,10 @@ var gulp         = require('gulp'),
 gulp.task('lint', function () {
     return gulp.src([
         'api/**/*.js',
-        'commands/**/*.js',
+        'modules/**/*.js',
         'app.js',
         'command.js',
+        'module.js',
     ])
         .pipe($.jshint())
         .pipe($.jshint.reporter(require('jshint-stylish')))

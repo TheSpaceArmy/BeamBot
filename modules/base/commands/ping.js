@@ -1,6 +1,6 @@
 'use strict';
 
-var Command = require('../command.js');
+var Command = require('../../../command.js');
 
 function PingCommand () {
 	Command.ctor(this, 'ping');

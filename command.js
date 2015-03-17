@@ -26,13 +26,8 @@ Command.ctor = function (self, defconfig) {
 	return Command.apply(self, [defconfig]);
 };
 
-var allCommands = null;
-function loadCommands() {
-	if (allCommands) {
-		return Promise.resolve(allCommands);
-	}
-
-	var dir = './commands/';
+function loadCommands(baseDir) {
+	var dir = baseDir + '/commands/';
 	return new Promise(function (resolve, reject) {
 		var commands = {};
 		require('readdirp')({ root: dir, findFilter: '*.js' })
@@ -47,13 +42,12 @@ function loadCommands() {
 			reject(err);
 		});
 	}).then(function (commands) {
-		allCommands = commands;
 		return commands;
 	});
 }
 
-Command.getAll = function (config, api, chatAPI) {
-	return loadCommands().then(function (commands) {
+Command.getAllForDir = function (baseDir, config, api, chatAPI) {
+	return loadCommands(baseDir).then(function (commands) {
 		var cmdInstances = {};
 		_.forEach(commands, function (SubCommand, key) {
 			var cmd = new SubCommand();

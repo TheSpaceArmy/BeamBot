@@ -2,3 +2,4 @@
 /config/channels/*
 !/config/channels/default.example.js
 node_modules
+npm-debug.log
