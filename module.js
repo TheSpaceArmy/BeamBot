@@ -38,7 +38,7 @@ function loadModules () {
 	});
 }
 
-Module.getAll = function (config, api, chatAPI) {
+Module.getAll = function (config, bot) {
 	var cmdInstances = {};
 	return loadModules().then(function (modules) {
 		var moduleInstances = {};
@@ -47,11 +47,8 @@ Module.getAll = function (config, api, chatAPI) {
 			if (config && config[dir]) {
 				module.setConfig(config[dir]);
 			}
-			if (api) {
-				module.setAPI(api);
-			}
-			if (chatAPI) {
-				module.setChatAPI(chatAPI);
+			if (bot) {
+				module.setBot(bot);
 			}
 			if (module.config.enabled) {
 				moduleInstances[dir] = module;
@@ -61,7 +58,7 @@ Module.getAll = function (config, api, chatAPI) {
 	}).then(function (modules) {
 		var res = [];
 		_.forEach(modules, function (module, dir) {
-			res.push(Command.getAllForDir('./modules/' + dir + '/', module.config.commands, api, chatAPI)
+			res.push(Command.getAllForDir('./modules/' + dir + '/', module.config.commands, bot)
 						.then(function (commands) {
 				module.commands = commands;
 				cmdInstances = _.merge(cmdInstances, commands);
@@ -83,12 +80,8 @@ Module.prototype.setConfig = function (config) {
 	this.config = _.merge(this.config, config);
 };
 
-Module.prototype.setAPI = function (api) {
-	this.api = api;
-};
-
-Module.prototype.setChatAPI = function (chatAPI) {
-	this.chatAPI = chatAPI;
+Module.prototype.setBot = function (bot) {
+	this.bot = bot;
 };
 
 module.exports = Module;

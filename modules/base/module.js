@@ -8,7 +8,7 @@ function BaseModule () {
 Module.inherit(BaseModule);
 
 BaseModule.prototype.init = function () {
-	console.log('LOADED');
+
 };
 
 module.exports = BaseModule;
