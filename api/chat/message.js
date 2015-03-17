@@ -32,7 +32,11 @@ BeamChatMessage.prototype.getText = function() {
 };
 
 BeamChatMessage.prototype.delete = function() {
-	return this.api._userApiRequest('DELETE', this.baseAPIURL + 'message/' + this.id);
+	return this.api._userApiRequest('delete', this.baseAPIURL + 'message/' + this.id);
+};
+
+BeamChatMessage.prototype.reply = function(msg) {
+	return this.chatAPI.sendMessage('@' + this.user.name + ': ' + msg);
 };
 
 module.exports = BeamChatMessage;

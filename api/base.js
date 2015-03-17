@@ -110,4 +110,8 @@ BeamAPI.prototype.joinChat = function (id) {
 	return userApiRequest(this, 'get', 'chats/' + id);
 };
 
+BeamAPI.prototype._userApiRequest = function(method,  url, data) {
+	return userApiRequest(this, method, url, data);
+};
+
 module.exports = BeamAPI;
