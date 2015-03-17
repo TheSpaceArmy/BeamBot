@@ -46,7 +46,7 @@ function loadCommands(baseDir) {
 	});
 }
 
-Command.getAllForDir = function (baseDir, config, bot) {
+Command.getAllForDir = function (baseDir, config, module) {
 	return loadCommands(baseDir).then(function (commands) {
 		var cmdInstances = {};
 		_.forEach(commands, function (SubCommand, key) {
@@ -54,8 +54,8 @@ Command.getAllForDir = function (baseDir, config, bot) {
 			if (config && config[key]) {
 				cmd.setConfig(config[key]);
 			}
-			if (bot) {
-				cmd.setBot(bot);
+			if (module) {
+				cmd.setModule(module);
 			}
 			if (cmd.config.enabled) {
 				cmdInstances[cmd.config.name] = cmd;
@@ -81,8 +81,24 @@ Command.prototype.setConfig = function (config) {
 	this.config = _.merge(this.config, config);
 };
 
-Command.prototype.setBot = function (bot) {
-	this.bot = bot;
+Command.prototype.setModule = function (module) {
+	this.module = module;
+};
+
+Command.prototype.getModule = function () {
+	return this.module;
+};
+
+Command.prototype.getBot = function () {
+	return this.module.bot;
+};
+
+Command.prototype.getAPI = function () {
+	return this.module.bot.api;
+};
+
+Command.prototype.getChatAPI = function () {
+	return this.module.bot.chatAPI;
 };
 
 module.exports = Command;

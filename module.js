@@ -58,7 +58,7 @@ Module.getAll = function (config, bot) {
 	}).then(function (modules) {
 		var res = [];
 		_.forEach(modules, function (module, dir) {
-			res.push(Command.getAllForDir('./modules/' + dir + '/', module.config.commands, bot)
+			res.push(Command.getAllForDir('./modules/' + dir + '/', module.config.commands, module)
 						.then(function (commands) {
 				module.commands = commands;
 				cmdInstances = _.merge(cmdInstances, commands);
@@ -82,6 +82,18 @@ Module.prototype.setConfig = function (config) {
 
 Module.prototype.setBot = function (bot) {
 	this.bot = bot;
+};
+
+Module.prototype.getBot = function () {
+	return this.bot;
+};
+
+Module.prototype.getAPI = function () {
+	return this.bot.api;
+};
+
+Module.prototype.getChatAPI = function () {
+	return this.bot.chatAPI;
 };
 
 module.exports = Module;
