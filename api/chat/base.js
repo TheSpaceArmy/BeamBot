@@ -14,7 +14,7 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 	this.channelID = channelID;
 	this.autoReconnect = autoReconnect !== false;
 	this.methodCallID = 1;
-	
+
 	this.methodsWaitingForReply = {};
 	this.connectionHandlers = [];
 
@@ -29,9 +29,9 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 }
 
 function announceConnection (self, success) {
-	_.forEach(self.connectionHandlers, function(handler) {
+	_.forEach(self.connectionHandlers, function (handler) {
 		var handlerFunc = success ? handler.success : handler.fail;
-		if(handlerFunc) {
+		if (handlerFunc) {
 			handlerFunc();
 		}
 	});
@@ -39,7 +39,7 @@ function announceConnection (self, success) {
 }
 
 BeamChatAPI.prototype.on = function (event, callback) {
-	if(this.eventHandlers[event]) {
+	if (this.eventHandlers[event]) {
 		this.eventHandlers[event].push(callback);
 	} else {
 		this.eventHandlers[event] = [callback];
@@ -51,13 +51,13 @@ BeamChatAPI.prototype.onReplyError = function (callback) {
 };
 
 function onWSData (self, data) {
-	switch(data.type) {
+	switch (data.type) {
 		case 'reply':
-			if(self.methodsWaitingForReply[data.id]) {
+			if (self.methodsWaitingForReply[data.id]) {
 				self.methodsWaitingForReply[data.id](data);
 				delete self.methodsWaitingForReply[data.id];
 			} else {
-				if(data.error) {
+				if (data.error) {
 					_.forEach(self.replyErrorHandlers, function (handler) {
 						handler(data.error);
 					});
@@ -69,7 +69,7 @@ function onWSData (self, data) {
 		case 'event':
 			var eventName = data.event;
 			var eventData = data.data;
-			if(self.eventPreprocessors[eventName]) {
+			if (self.eventPreprocessors[eventName]) {
 				eventData = self.eventPreprocessors[eventName](eventData);
 			}
 			_.forEach(self.eventHandlers[eventName], function (handler) {
@@ -86,11 +86,11 @@ function sendMethod (self, method, args, expectsReply) {
 		method: method,
 		arguments: args,
 		id: methodCallID
-	}).then(function() {
-		if(expectsReply) {
+	}).then(function () {
+		if (expectsReply) {
 			return new Promise(function (resolve, reject) {
-				self.methodsWaitingForReply[methodCallID] = function(data) {
-					if(data.error) {
+				self.methodsWaitingForReply[methodCallID] = function (data) {
+					if (data.error) {
 						reject(data.error);
 					} else {
 						resolve(data.data);
@@ -105,7 +105,7 @@ function websocketReconnect (self) {
 	self.websocketConnection = null;
 	self.websocket = null;
 
-	if(!self.canBeConnected || !self.autoReconnect) {
+	if (!self.canBeConnected || !self.autoReconnect) {
 		self.canBeConnected = false;
 		return;
 	}
@@ -114,8 +114,8 @@ function websocketReconnect (self) {
 }
 
 function sendData (self, data) {
-	if(!self.websocket || !self.websocketConnection) {
-		return self.connect().then(function() {
+	if (!self.websocket || !self.websocketConnection) {
+		return self.connect().then(function () {
 			return sendData(self, data);
 		});
 	}
@@ -130,7 +130,7 @@ BeamChatAPI.prototype.sendMessage = function (msg) {
 
 BeamChatAPI.prototype.close = function () {
 	this.canBeConnected = false;
-	if(this.websocketConnection) {
+	if (this.websocketConnection) {
 		this.websocketConnection.close();
 		this.websocketConnection = null;
 	}
@@ -139,11 +139,11 @@ BeamChatAPI.prototype.close = function () {
 BeamChatAPI.prototype.connect = function () {
 	var self = this;
 
-	if(this.canBeConnected) {
-		if(this.websocketConnection) {
+	if (this.canBeConnected) {
+		if (this.websocketConnection) {
 			return Promise.resolve();
 		} else {
-			return new Promise(function(resolve, reject) {
+			return new Promise(function (resolve, reject) {
 				self.connectionHandlers.push({
 					success: resolve,
 					fail: reject
@@ -154,14 +154,14 @@ BeamChatAPI.prototype.connect = function () {
 
 	this.canBeConnected = true;
 
-	return this.api.joinChat(this.channelID).then(function(data) {
+	return this.api.joinChat(this.channelID).then(function (data) {
 		self.chatData = data;
 		var endpoint = data.endpoints[Math.floor(Math.random() * data.endpoints.length)];
 
 		return new Promise(function (resolve, reject) {
 			self.websocket = new WebSocketClient();
-			self.websocket.on('connect', function(connection) {
-				if(!self.canBeConnected) {
+			self.websocket.on('connect', function (connection) {
+				if (!self.canBeConnected) {
 					self.websocket = null;
 					connection.close();
 					return;
@@ -171,7 +171,7 @@ BeamChatAPI.prototype.connect = function () {
 					console.log('[chat] error', err);
 					websocketReconnect(self);
 				});
-				connection.on('close', function () { 
+				connection.on('close', function () {
 					websocketReconnect(self);
 				});
 				connection.on('message', function (data) {
@@ -180,7 +180,7 @@ BeamChatAPI.prototype.connect = function () {
 				announceConnection(self, true);
 				resolve(sendMethod(self, 'auth', [self.channelID, self.api.currentUser.id, data.authkey], true));
 			});
-			self.websocket.on('connectFailed', function(err) {
+			self.websocket.on('connectFailed', function (err) {
 				websocketReconnect(self);
 				announceConnection(self, false);
 				reject(err);

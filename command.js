@@ -4,7 +4,7 @@ var _ = require('lodash');
 var Promise = require('bluebird');
 
 function Command (defconfig) {
-	if(_.isString(defconfig)) {
+	if (_.isString(defconfig)) {
 		defconfig = {
 			name: defconfig
 		};
@@ -28,7 +28,7 @@ Command.ctor = function (self, defconfig) {
 
 var allCommands = null;
 function loadCommands() {
-	if(allCommands) {
+	if (allCommands) {
 		return Promise.resolve(allCommands);
 	}
 
@@ -52,23 +52,23 @@ function loadCommands() {
 	});
 }
 
-Command.getAll = function(config, api, chatAPI) {
+Command.getAll = function (config, api, chatAPI) {
 	return loadCommands().then(function (commands) {
 		var cmdInstances = {};
 		_.forEach(commands, function (SubCommand, key) {
 			var cmd = new SubCommand();
-			if(config && config[key]) {
+			if (config && config[key]) {
 				cmd.setConfig(config[key]);
 			}
-			if(api) {
+			if (api) {
 				cmd.setAPI(api);
 			}
-			if(chatAPI) {
+			if (chatAPI) {
 				cmd.setChatAPI(chatAPI);
 			}
-			if(cmd.config.enabled) {
+			if (cmd.config.enabled) {
 				cmdInstances[cmd.config.name] = cmd;
-				_.forEach(cmd.config.aliases, function(alias) {
+				_.forEach(cmd.config.aliases, function (alias) {
 					cmdInstances[alias] = cmd;
 				});
 			}

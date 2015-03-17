@@ -17,10 +17,10 @@ function BeamChatMessage(chatAPI, data) {
 	this.message = data.message;
 }
 
-BeamChatMessage.prototype.getText = function() {
+BeamChatMessage.prototype.getText = function () {
 	var text = '';
-	_.forEach(this.message, function(component) {
-		switch(component.type) {
+	_.forEach(this.message, function (component) {
+		switch (component.type) {
 			case 'text':
 				text += component.data;
 				break;
@@ -33,11 +33,11 @@ BeamChatMessage.prototype.getText = function() {
 	return text;
 };
 
-BeamChatMessage.prototype.delete = function() {
+BeamChatMessage.prototype.delete = function () {
 	return this.api._userApiRequest('delete', this.baseAPIURL + 'message/' + this.id);
 };
 
-BeamChatMessage.prototype.reply = function(msg) {
+BeamChatMessage.prototype.reply = function (msg) {
 	return this.chatAPI.sendMessage('@' + this.user.name + ': ' + msg);
 };
 

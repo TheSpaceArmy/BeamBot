@@ -17,19 +17,21 @@ api.login().then(function (user) {
 	_.forEach(config.channels, function (channelID) {
 		var chat = new BeamChatAPI(api, channelID, true);
 		chat.connect().then(function () {
-			return fs.existsSync('./config/channels/' + channelID + '.js') ? require('./config/channels/' + channelID + '.js') : require('./config/channels/default.js');
+			return fs.existsSync('./config/channels/' + channelID + '.js') ?
+						require('./config/channels/' + channelID + '.js') :
+						require('./config/channels/default.js');
 		}).then(function (config) {
 			return [config, Command.getAll(config.commands, api, chat)];
 		}).spread(function (config, commands) {
-			chat.on('ChatMessage', function(msg) {
+			chat.on('ChatMessage', function (msg) {
 				var msgText = msg.getText();
-				if(msgText.charAt(0) == '!') {
+				if (msgText.charAt(0) === '!') {
 					var cmdArgs = msgText.substr(1).trim().split(' ');
-					if(cmdArgs) {
+					if (cmdArgs) {
 						var cmd = cmdArgs.shift().toLowerCase();
-						if(cmd) {
-							if(commands[cmd]) {
-								commands[cmd].run(msg).catch(function(err) {
+						if (cmd) {
+							if (commands[cmd]) {
+								commands[cmd].run(msg).catch(function (err) {
 									console.log('Command error:', err);
 								});
 							} else {
