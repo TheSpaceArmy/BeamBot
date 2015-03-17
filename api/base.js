@@ -32,13 +32,15 @@ function BeamAPI(username, password) {
 }
 BeamAPI.APIError = APIError;
 
-function userApiRequest(self, method,  url, data) {
-	return self.login().then(function () {
-		return apiRequest(self, method, url, data);
+BeamAPI.prototype._userApiRequest = function (method,  url, data) {
+	var self = this;
+	return this.login().then(function () {
+		return self._apiRequest(method, url, data);
 	});
-}
+};
 
-function apiRequest(self, method, url, data, noRetryOn403) {
+BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
+	var self = this;
 	return new Promise(function (resolve /*, reject*/) {
 		var sendData = function () {
 			self.socket.request(API_ENDPOINT_BASE + url, data, function (body, response) {
@@ -54,7 +56,7 @@ function apiRequest(self, method, url, data, noRetryOn403) {
 		if (response.statusCode === 403 && !noRetryOn403) {
 			self.isLoggedIn = false;
 			return self.login().then(function () {
-				return apiRequest(self, method, url, data, true);
+				return self._apiRequest(method, url, data, true);
 			});
 		}
 
@@ -64,14 +66,14 @@ function apiRequest(self, method, url, data, noRetryOn403) {
 
 		return body;
 	});
-}
+};
 
 BeamAPI.prototype.login = function () {
 	if (this.isLoggedIn) {
 		return Promise.resolve(this.currentUser);
 	}
 	var self = this;
-	return apiRequest(this, 'post', 'users/login', {
+	return this._apiRequest('post', 'users/login', {
 		username: this.username,
 		password: this.password
 	}, true).then(function (data) {
@@ -88,29 +90,21 @@ BeamAPI.prototype.login = function () {
 
 BeamAPI.prototype.logout = function () {
 	var self = this;
-	return apiRequest(this, 'delete', 'users/current', {}, true).finally(function () {
+	return this._apiRequest('delete', 'users/current', {}, true).finally(function () {
 		self.isLoggedIn = false;
 	});
 };
 
 BeamAPI.prototype.getCurrentUser = function () {
 	var self = this;
-	return userApiRequest(this, 'get', 'users/current').then(function (data) {
+	return this._userApiRequest('get', 'users/current').then(function (data) {
 		self.currentUser = data;
 		return data;
 	});
 };
 
 BeamAPI.prototype.joinChat = function (id) {
-	return userApiRequest(this, 'get', 'chats/' + id);
-};
-
-BeamAPI.prototype._userApiRequest = function (method,  url, data) {
-	return userApiRequest(this, method, url, data);
-};
-
-BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
-	return apiRequest(this, method, url, data, noRetryOn403);
+	return this._userApiRequest('get', 'chats/' + id);
 };
 
 module.exports = BeamAPI;
