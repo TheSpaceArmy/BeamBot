@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var fs = require('fs');
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
 
 var config = require('./config/config');
 
@@ -17,9 +18,14 @@ api.login().then(function (user) {
 	_.forEach(config.channels, function (channelID) {
 		var chat = new BeamChatAPI(api, channelID, true);
 		chat.connect().then(function () {
-			var config = fs.existsSync('./config/channels/' + channelID + '.js') ?
-							require('./config/channels/' + channelID + '.js') :
-							require('./config/channels/default.js');
+			return fs.existsAsync('./config/channels/' + channelID + '.js').then(function (exists) {
+				if (exists) {
+					return require('./config/channels/' + channelID + '.js');
+				} else {
+					return require('./config/channels/default.js');
+				}
+			});
+		}).then(function (config) {
 			return Module.getAll(config.modules, api, chat).spread(function (modules, commands) {
 				return [config, modules, commands];
 			});
