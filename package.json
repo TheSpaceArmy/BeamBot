@@ -8,10 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:Doridian/beambot.git"
+    "url": "git@github.com:Doridian/BeamBot.git"
   },
   "author": "Doridian",
-  "license": "ISC",
+  "license": "LGPL",
   "dependencies": {
     "bluebird": "^2.9.14",
     "lodash": "^3.5.0",
