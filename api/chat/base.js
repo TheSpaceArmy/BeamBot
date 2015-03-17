@@ -7,7 +7,7 @@ var WebSocketClient = require('websocket').client;
 var BeamChatMessage = require('./message');
 
 //api = BeamAPI
-function BeamChatAPI(api, channelID, autoReconnect) {
+function BeamChatAPI (api, channelID, autoReconnect) {
 	var self = this;
 
 	this.api = api;

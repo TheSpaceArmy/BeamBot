@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 
-function BeamChatMessage(chatAPI, data) {
+function BeamChatMessage (chatAPI, data) {
 	this.chatAPI = chatAPI;
 	this.api = chatAPI.api;
 	this.baseAPIURL = 'chats/' + chatAPI.channelID + '/';

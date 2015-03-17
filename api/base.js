@@ -11,13 +11,13 @@ sails.sails.useCORSRouteToGetCookie = false;
 sails.sails.url = API_ADDRESS;
 sails.sails.environment = 'develop';
 
-function APIError(code, body) {
+function APIError (code, body) {
 	this.code = code;
 	this.body = body;
 	this.message = 'Response code ' + code;
 }
 
-function BeamAPI(username, password) {
+function BeamAPI (username, password) {
 	this.username = username;
 	this.password = password;
 	this.isLoggedIn = false;
