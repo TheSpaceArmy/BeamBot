@@ -43,7 +43,7 @@ function apiRequest(self, method, url, data, noRetryOn403) {
 		var sendData = function () {
 			self.socket.request(API_ENDPOINT_BASE + url, data, function (body, response) {
 				resolve([body, response]);
-			}, method);
+			}, method ? method.toLowerCase() : 'get');
 		};
 		if (self.socket.socket.connected) {
 			sendData();
