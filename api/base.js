@@ -1,15 +1,15 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
-//var request = Promise.promisify(require('request').defaults({jar: true}));
 
 var API_ENDPOINT_BASE = '/api/v1/';
+var API_ADDRESS = 'https://beam.pro';
 
 var SocketIOClient = require('socket.io-client');
 var SailsIOClient = require('sails.io.js');
 var io = SailsIOClient(SocketIOClient);
 io.sails.autoConnect = true;
 io.sails.useCORSRouteToGetCookie = false;
-io.sails.url = 'https://beam.pro';
+io.sails.url = API_ADDRESS;
 io.sails.environment = 'develop';
 
 function APIError(code, body) {
