@@ -5,6 +5,12 @@ var Promise = require('bluebird');
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 
+var sails = require('sails.io.js')(require('socket.io-client'));
+sails.sails.autoConnect = false;
+sails.sails.useCORSRouteToGetCookie = false;
+sails.sails.url = API_ADDRESS;
+sails.sails.environment = 'develop';
+
 function APIError(code, body) {
 	this.code = code;
 	this.body = body;
@@ -16,13 +22,7 @@ function BeamAPI(username, password) {
 	this.password = password;
 	this.isLoggedIn = false;
 
-	var sails = require('sails.io.js')(require('socket.io-client'));
-	sails.sails.autoConnect = false;
-	sails.sails.useCORSRouteToGetCookie = false;
-	sails.sails.url = API_ADDRESS;
-	sails.sails.environment = 'develop';
 	this.socket = sails.connect(API_ADDRESS);
-	this.sails = sails;
 
 	this.socket.on('connect', function () { console.log('[sails.socket.io] connected'); });
 	this.socket.on('disconnect', function () { console.log('[sails.socket.io] disconnected'); });
