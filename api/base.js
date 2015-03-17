@@ -1,8 +1,16 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
-var request = Promise.promisify(require('request').defaults({jar: true}));
+//var request = Promise.promisify(require('request').defaults({jar: true}));
 
-var API_ENDPOINT_BASE = 'https://beam.pro/api/v1/';
+var API_ENDPOINT_BASE = '/api/v1/';
+
+var SocketIOClient = require('socket.io-client');
+var SailsIOClient = require('sails.io.js');
+var io = SailsIOClient(SocketIOClient);
+io.sails.autoConnect = true;
+io.sails.useCORSRouteToGetCookie = false;
+io.sails.url = 'https://beam.pro';
+io.sails.environment = 'develop';
 
 function APIError(code, body) {
 	this.code = code;
@@ -11,6 +19,8 @@ function APIError(code, body) {
 }
 
 function BeamAPI(username, password) {
+	var self = this;
+
 	this.username = username;
 	this.password = password;
 	this.isLoggedIn = false;
@@ -26,11 +36,12 @@ BeamAPI.prototype._userApiRequest = function (method,  url, data) {
 
 BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
 	var self = this;
-	return request({
-		url: API_ENDPOINT_BASE + url,
-		method: method,
-		json: data
-	}).spread(function(response, body) {
+
+	return new Promise(function(resolve, reject) {
+		io.socket.request(API_ENDPOINT_BASE + url, data, function(body, response) {
+			resolve([body, response]);
+		}, method);
+	}).spread(function(body, response) {
 		if(response.statusCode === 403 && !noRetryOn403) {
 			this.isLoggedIn = false;
 			return self.login().then(function() {
@@ -55,7 +66,7 @@ BeamAPI.prototype.login = function () {
 		return Promise.resolve(this.currentUser);
 	}
 	var self = this;
-	return this._apiRequest('POST', 'users/login', {
+	return this._apiRequest('post', 'users/login', {
 		username: this.username,
 		password: this.password
 	}, true).then(function(data) {
@@ -72,21 +83,21 @@ BeamAPI.prototype.login = function () {
 
 BeamAPI.prototype.logout = function () {
 	var self = this
-	return this._apiRequest('DELETE', 'users/current', {}, true).finally(function () {
+	return this._apiRequest('delete', 'users/current', {}, true).finally(function () {
 		self.isLoggedIn = false;
 	});
 };
 
 BeamAPI.prototype.getCurrentUser = function () {
 	var self = this;
-	return this._userApiRequest('GET', 'users/current').then(function(data) {
+	return this._userApiRequest('get', 'users/current').then(function(data) {
 		self.currentUser = data;
 		return data;
 	});
 };
 
 BeamAPI.prototype.joinChat = function (id) {
-	return this._userApiRequest('GET', 'chats/' + id);
+	return this._userApiRequest('get', 'chats/' + id);
 };
 
 module.exports = BeamAPI;

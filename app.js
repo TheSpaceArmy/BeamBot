@@ -7,13 +7,14 @@ var BeamAPI = require('./api/base');
 var BeamChatAPI = require('./api/chat/base');
 
 var api = new BeamAPI(config.username, config.password);
+
 api.login().then(function(user) {
-	console.log('Logged in as ' + user.name + '. Joining channels...');
+	console.log('Logged in as ' + user.username + '. Joining channels...');
 	_.forEach(config.channels, function (channelID) {
 		var chat = new BeamChatAPI(api, channelID, true);
 		chat.connect().then(function() {
-			var channelConfig = fs.existsSync('./config/channel/' + channelID + '.js') ? require('./config/channel/' + channelID + '.js') : require('./config/channel/default.js');
-			//DONE
+			var channelConfig = fs.existsSync('./config/channels/' + channelID + '.js') ? require('./config/channels/' + channelID + '.js') : require('./config/channels/default.js');
+			console.log('Joined chat for channel ' + channelID);
 		}).catch(function (err) {
 			console.log('Chat join error: ', err);
 		});

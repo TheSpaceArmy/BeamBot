@@ -16,6 +16,8 @@
     "bluebird": "^2.9.14",
     "lodash": "^3.5.0",
     "request": "^2.53.0",
+    "sails.io.js": "^0.10.3",
+    "socket.io-client": "^0.9.16",
     "tough-cookie": "^0.12.1",
     "websocket": "^1.0.17"
   }
