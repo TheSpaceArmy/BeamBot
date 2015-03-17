@@ -1,5 +1,6 @@
+'use strict';
+
 var Promise = require('bluebird');
-var _ = require('lodash');
 
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
@@ -11,8 +12,6 @@ function APIError(code, body) {
 }
 
 function BeamAPI(username, password) {
-	var self = this;
-
 	this.username = username;
 	this.password = password;
 	this.isLoggedIn = false;
@@ -40,7 +39,7 @@ function userApiRequest(self, method,  url, data) {
 }
 
 function apiRequest(self, method, url, data, noRetryOn403) {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function(resolve /*, reject*/) {
 		var sendData = function() {
 			self.socket.request(API_ENDPOINT_BASE + url, data, function(body, response) {
 				resolve([body, response]);
@@ -65,7 +64,7 @@ function apiRequest(self, method, url, data, noRetryOn403) {
 
 		return body;
 	});
-};
+}
 
 BeamAPI.prototype.login = function () {
 	if(this.isLoggedIn) {
@@ -88,7 +87,7 @@ BeamAPI.prototype.login = function () {
 };
 
 BeamAPI.prototype.logout = function () {
-	var self = this
+	var self = this;
 	return apiRequest(this, 'delete', 'users/current', {}, true).finally(function () {
 		self.isLoggedIn = false;
 	});

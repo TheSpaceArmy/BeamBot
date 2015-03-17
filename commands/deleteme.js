@@ -1,11 +1,13 @@
+'use strict';
+
 var Command = require('../command.js');
 
-function DeleteMeCommand(config) {
+function DeleteMeCommand () {
 	Command.ctor(this, 'deleteme');
 }
 Command.inherit(DeleteMeCommand);
 
-DeleteMeCommand.prototype.run = function(msg) {
+DeleteMeCommand.prototype.run = function (msg) {
 	return msg.delete();
 };
 

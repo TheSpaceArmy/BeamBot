@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 var Promise = require('bluebird');
 
@@ -48,7 +50,7 @@ function loadCommands() {
 		allCommands = commands;
 		return commands;
 	});
-};
+}
 
 Command.getAll = function(config, api, chatAPI) {
 	return loadCommands().then(function (commands) {
@@ -75,7 +77,7 @@ Command.getAll = function(config, api, chatAPI) {
 	});
 };
 
-Command.prototype.run = function (message) {
+Command.prototype.run = function (/* message */) {
 	console.error('Command ' + this.config.name + ' not implemented!');
 	return Promise.reject('Not implemented');
 };

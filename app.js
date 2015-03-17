@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 var fs = require('fs');
 
@@ -43,6 +45,6 @@ api.login().then(function (user) {
 			console.log('Chat init error: ', err);
 		});
 	});
-}).catch(function(err) {
+}).catch(function (err) {
 	console.log('Login error: ', err);
 });

@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require('bluebird');
 var _ = require('lodash');
 var WebSocketClient = require('websocket').client;
@@ -28,13 +30,13 @@ function BeamChatAPI(api, channelID, autoReconnect) {
 
 function announceConnection (self, success) {
 	_.forEach(self.connectionHandlers, function(handler) {
-		var handler = success ? handler.success : handler.fail;
-		if(handler) {
-			handler();
+		var handlerFunc = success ? handler.success : handler.fail;
+		if(handlerFunc) {
+			handlerFunc();
 		}
 	});
 	self.connectionHandlers = [];
-};
+}
 
 BeamChatAPI.prototype.on = function (event, callback) {
 	if(this.eventHandlers[event]) {
@@ -56,7 +58,7 @@ function onWSData (self, data) {
 				delete self.methodsWaitingForReply[data.id];
 			} else {
 				if(data.error) {
-					_.forEach(this.replyErrorHandlers, function (handler) {
+					_.forEach(self.replyErrorHandlers, function (handler) {
 						handler(data.error);
 					});
 				} else {
@@ -75,14 +77,14 @@ function onWSData (self, data) {
 			});
 			break;
 	}
-};
+}
 
-function sendMethod (self, method, arguments, expectsReply) {
+function sendMethod (self, method, args, expectsReply) {
 	var methodCallID = self.methodCallID++;
 	return sendData(self, {
 		type: 'method',
 		method: method,
-		arguments: arguments,
+		arguments: args,
 		id: methodCallID
 	}).then(function() {
 		if(expectsReply) {
@@ -97,7 +99,7 @@ function sendMethod (self, method, arguments, expectsReply) {
 			});
 		}
 	});
-};
+}
 
 function websocketReconnect (self) {
 	self.websocketConnection = null;
@@ -109,7 +111,7 @@ function websocketReconnect (self) {
 	}
 
 	self.connect();
-};
+}
 
 function sendData (self, data) {
 	if(!self.websocket || !self.websocketConnection) {
@@ -120,7 +122,7 @@ function sendData (self, data) {
 
 	self.websocketConnection.sendUTF(JSON.stringify(data));
 	return Promise.resolve();
-};
+}
 
 BeamChatAPI.prototype.sendMessage = function (msg) {
 	return sendMethod(this, 'msg', [msg]);
