@@ -8,18 +8,18 @@ var BeamChatAPI = require('./api/chat/base');
 
 var Module = require('./module');
 
-function BeamBot (api, channelID) {
-	this.channelID = channelID;
+function BeamBot (api, channel) {
+	this.channel = channel;
 	this.api = api;
-	this.chatAPI = new BeamChatAPI(api, channelID, true);
+	this.chatAPI = new BeamChatAPI(api, channel, true);
 }
 
 BeamBot.prototype.load = function () {
 	var self = this;
 
-	return fs.existsAsync('./config/channels/' + self.channelID + '.js').then(function (exists) {
+	return fs.existsAsync('./config/channels/' + self.channel.getId() + '.js').then(function (exists) {
 		if (exists) {
-			return require('./config/channels/' + self.channelID + '.js');
+			return require('./config/channels/' + self.channel.getId() + '.js');
 		} else {
 			return require('./config/channels/default.js');
 		}

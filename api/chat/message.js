@@ -3,7 +3,7 @@
 var _ = require('lodash');
 
 var cache = require('../cache');
-var BeamUser = require('../user');
+var BeamUser = require('../classes/user');
 
 function BeamChatMessage (chatAPI, data) {
 	this.chatAPI = chatAPI;

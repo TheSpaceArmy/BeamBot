@@ -7,11 +7,11 @@ var WebSocketClient = require('websocket').client;
 var BeamChatMessage = require('./message');
 
 //api = BeamAPI
-function BeamChatAPI (api, channelID, autoReconnect) {
+function BeamChatAPI (api, channel, autoReconnect) {
 	var self = this;
 
 	this.api = api;
-	this.channelID = channelID;
+	this.channel = channel;
 	this.autoReconnect = autoReconnect !== false;
 	this.methodCallID = 1;
 
@@ -154,7 +154,7 @@ BeamChatAPI.prototype.connect = function () {
 
 	this.canBeConnected = true;
 
-	return this.api.joinChat(this.channelID).then(function (data) {
+	return this.api.joinChat(this.channel.getId()).then(function (data) {
 		self.chatData = data;
 		var endpoint = data.endpoints[Math.floor(Math.random() * data.endpoints.length)];
 
@@ -178,7 +178,7 @@ BeamChatAPI.prototype.connect = function () {
 					onWSData(self, JSON.parse(data.utf8Data));
 				});
 				announceConnection(self, true);
-				resolve(sendMethod(self, 'auth', [self.channelID, self.api.currentUser.id, data.authkey], true));
+				resolve(sendMethod(self, 'auth', [self.channel.getId(), self.api.currentUser.id, data.authkey], true));
 			});
 			self.websocket.on('connectFailed', function (err) {
 				websocketReconnect(self);

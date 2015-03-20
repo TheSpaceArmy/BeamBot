@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 
-var BeamAPI = require('./api/base');
+var BeamAPI = require('./api/base').extend('channel').extend('user');
 var BeamBot = require('./bot');
 
 var config = require('./config/config');
@@ -12,13 +12,15 @@ var api = new BeamAPI(config.username, config.password);
 api.login().then(function (user) {
 	console.log('Logged in as ' + user.username + '. Joining channels...');
 	_.forEach(config.channels, function (channelID) {
-		var bot = new BeamBot(api, channelID);
-		bot.load().then(function () {
-			return bot.start();
-		}).then(function () {
-			console.log('Channel ' + channelID + ' joined!');
-		}).catch(function (err) {
-			console.log('Channel ' + channelID + ' error: ', err);
+		api.getChannel(channelID).then(function(channel) {
+			var bot = new BeamBot(api, channel);
+			bot.load().then(function () {
+				return bot.start();
+			}).then(function () {
+				console.log('Channel ' + channel.getId() + ' joined!');
+			}).catch(function (err) {
+				console.log('Channel ' + channel.getId() + ' error: ', err);
+			});
 		});
 	});
 }).catch(function (err) {
