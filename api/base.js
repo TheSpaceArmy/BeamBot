@@ -5,11 +5,9 @@ var Promise = require('bluebird');
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 
-var sails = require('sails.io.js')(require('socket.io-client'));
-sails.sails.autoConnect = false;
-sails.sails.useCORSRouteToGetCookie = false;
-sails.sails.url = API_ADDRESS;
-sails.sails.environment = 'develop';
+var io = require('socket.io-client');
+var sails = require('sails.io.js')(io);
+io.sails.autoConnect = false;
 
 function APIError (code, body) {
 	this.code = code;
@@ -22,7 +20,10 @@ function BeamAPI (username, password) {
 	this.password = password;
 	this.isLoggedIn = false;
 
-	this.socket = sails.connect(API_ADDRESS);
+	this.socket = io.sails.connect(API_ADDRESS, {
+		useCORSRouteToGetCookie: false,
+		transports: ['websocket']
+	});
 
 	this.socket.on('connect', function () { console.log('[sails.socket.io] connected'); });
 	this.socket.on('disconnect', function () { console.log('[sails.socket.io] disconnected'); });
@@ -42,16 +43,13 @@ BeamAPI.prototype._userApiRequest = function (method,  url, data) {
 BeamAPI.prototype._apiRequest = function (method, url, data, noRetryOn403) {
 	var self = this;
 	return new Promise(function (resolve /*, reject*/) {
-		var sendData = function () {
-			self.socket.request(API_ENDPOINT_BASE + url, data, function (body, response) {
-				resolve([body, response]);
-			}, method ? method.toLowerCase() : 'get');
-		};
-		if (self.socket.socket.connected) {
-			sendData();
-		} else {
-			self.socket.on('connect', sendData);
-		}
+		self.socket.request({
+			url: API_ENDPOINT_BASE + url,
+			params: data,
+			method: method
+		}, function (body, response) {
+			resolve([body, response]);
+		});
 	}).spread(function (body, response) {
 		if (response.statusCode === 403 && !noRetryOn403) {
 			self.isLoggedIn = false;
