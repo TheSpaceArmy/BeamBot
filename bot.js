@@ -6,7 +6,7 @@ var fs = Promise.promisifyAll(require('fs'));
 
 var BeamChatAPI = require('./api/chat/base');
 
-var Module = require('./module');
+var ModuleManager = require('./module').ModuleManager;
 
 function BeamBot (api, channel) {
 	this.channel = channel;
@@ -24,7 +24,7 @@ BeamBot.prototype.load = function () {
 			return require('./config/channels/default.js');
 		}
 	}).then(function (config) {
-		return Module.getAll(config.modules, self).spread(function (modules, commands) {
+		return ModuleManager.getAll(config.modules, self).spread(function (modules, commands) {
 			return [config, modules, commands];
 		});
 	}).spread(function (config, modules, commands) {
@@ -45,11 +45,11 @@ BeamBot.prototype.load = function () {
 					}
 				}
 			} else {
-
+				modules.emit('ChatMessage', msg);
 			}
 		});
 
-		return Module.initAll(modules);
+		return modules.init();
 	}).then(function () {
 		self.isLoaded = true;
 	});

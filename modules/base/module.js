@@ -1,6 +1,6 @@
 'use strict';
 
-var Module = require('../../module.js');
+var Module = require('../../module.js').Module;
 
 function BaseModule () {
 	Module.ctor(this, 'base');

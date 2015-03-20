@@ -19,7 +19,7 @@ api.login().then(function (user) {
 			}).then(function () {
 				console.log('Channel ' + channel.getId() + ' joined!');
 			}).catch(function (err) {
-				console.log('Channel ' + channel.getId() + ' error: ', err);
+				console.log('Channel ' + channel.getId() + ' error: ', err, err.stack);
 			});
 		});
 	});
