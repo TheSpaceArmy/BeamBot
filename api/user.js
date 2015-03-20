@@ -38,4 +38,12 @@ BeamUser.prototype.get = function (attr) {
 	});
 };
 
+BeamUser.prototype.getId = function () {
+	return this.data.id;
+};
+
+BeamUser.prototype.getName = function () {
+	return this.data.name;
+};
+
 module.exports = BeamUser;

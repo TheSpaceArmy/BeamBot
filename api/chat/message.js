@@ -41,7 +41,7 @@ BeamChatMessage.prototype.delete = function () {
 };
 
 BeamChatMessage.prototype.reply = function (msg) {
-	return this.chatAPI.sendMessage('@' + this.user.data.name + ': ' + msg);
+	return this.chatAPI.sendMessage('@' + this.user.getName() + ': ' + msg);
 };
 
 module.exports = BeamChatMessage;
