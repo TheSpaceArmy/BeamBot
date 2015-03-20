@@ -14,7 +14,8 @@ function Module (defconfig) {
 	}
 
 	this.config = _.merge(defconfig, {
-		enabled: true
+		enabled: true,
+		dependencies: null
 	});
 }
 
@@ -67,6 +68,30 @@ Module.getAll = function (config, bot) {
 		return Promise.all(res).return([modules, cmdInstances]);
 	});
 };
+
+function initAll (modules, filter, inits) {	
+	_.forEach(filter, function (moduleName) {
+		var module = modules[moduleName];
+		if(module._isInitAll) {
+			console.error('Circular module dependency');
+			return;
+		}
+		module._isInitAll = true;
+		if(module.isInitialized) {
+			return;
+		}
+		if(module.dependencies && module.dependencies.length > 0) {
+			initAll(modules, module.dependencies, inits);
+		}
+		inits.push(module.init());
+		module.isInitialized = true;
+	});
+	return inits;
+}
+
+Module.initAll = function (modules) {
+	return Promise.all(initAll(modules, Object.keys(modules), []));
+}
 
 Module.prototype.init = function () {
 

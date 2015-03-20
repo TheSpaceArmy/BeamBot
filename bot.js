@@ -49,12 +49,7 @@ BeamBot.prototype.load = function () {
 			}
 		});
 
-		var moduleInits = [];
-		_.forEach(modules, function (module) {
-			moduleInits.push(module.init(self));
-		});
-
-		return Promise.all(moduleInits);
+		return Module.initAll(modules);
 	}).then(function () {
 		self.isLoaded = true;
 	});
