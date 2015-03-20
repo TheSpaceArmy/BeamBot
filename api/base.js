@@ -2,6 +2,9 @@
 
 var Promise = require('bluebird');
 
+var cache = require('./cache');
+var BeamUser = require('./user');
+
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 
@@ -93,11 +96,25 @@ BeamAPI.prototype.logout = function () {
 	});
 };
 
-BeamAPI.prototype.getCurrentUser = function () {
+BeamAPI.prototype.getCurrentUser = function (raw) {
 	var self = this;
 	return this._userApiRequest('get', 'users/current').then(function (data) {
+		if(raw) {
+			return data;
+		}
+		data = cache.getOrCreate(BeamUser, self, data);
 		self.currentUser = data;
 		return data;
+	});
+};
+
+BeamAPI.prototype.getUser = function (id, raw) {
+	var self = this;
+	return this._userApiRequest('get', 'users/' + id).then(function (data) {
+		if(raw) {
+			return data;
+		}
+		return cache.getOrCreate(BeamUser, self, data);
 	});
 };
 

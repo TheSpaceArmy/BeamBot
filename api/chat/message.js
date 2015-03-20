@@ -2,16 +2,19 @@
 
 var _ = require('lodash');
 
+var cache = require('../cache');
+var BeamUser = require('../user');
+
 function BeamChatMessage (chatAPI, data) {
 	this.chatAPI = chatAPI;
 	this.api = chatAPI.api;
 	this.baseAPIURL = 'chats/' + chatAPI.channelID + '/';
 
-	this.user = {
+	this.user = cache.getOrCreate(BeamUser, this.api, {
 		id: data.user_id,
-		role: data.user_role,
 		name: data.user_name
-	};
+	});
+	this.user_role = data.user_role;
 	this.id = data.id;
 	this.channelID = data.channel;
 	this.message = data.message;
@@ -38,7 +41,7 @@ BeamChatMessage.prototype.delete = function () {
 };
 
 BeamChatMessage.prototype.reply = function (msg) {
-	return this.chatAPI.sendMessage('@' + this.user.name + ': ' + msg);
+	return this.chatAPI.sendMessage('@' + this.user.data.name + ': ' + msg);
 };
 
 module.exports = BeamChatMessage;
