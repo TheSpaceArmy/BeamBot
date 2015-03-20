@@ -10,7 +10,7 @@ function get (Class, id) {
 function getOrCreate (Class, api, data, id) {
 	id = id || data.id;
 	var instance = get(Class, id);
-	if(!instance) {
+	if (!instance) {
 		instance = new Class(api);
 	}
 	instance.setData(data);

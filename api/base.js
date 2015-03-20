@@ -9,7 +9,7 @@ var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 
 var io = require('socket.io-client');
-var sails = require('sails.io.js')(io);
+require('sails.io.js')(io);
 io.sails.autoConnect = false;
 
 function APIError (code, body) {
@@ -99,7 +99,7 @@ BeamAPI.prototype.logout = function () {
 BeamAPI.prototype.getCurrentUser = function (raw) {
 	var self = this;
 	return this._userApiRequest('get', 'users/current').then(function (data) {
-		if(raw) {
+		if (raw) {
 			return data;
 		}
 		data = cache.getOrCreate(BeamUser, self, data);
@@ -111,7 +111,7 @@ BeamAPI.prototype.getCurrentUser = function (raw) {
 BeamAPI.prototype.getUser = function (id, raw) {
 	var self = this;
 	return this._userApiRequest('get', 'users/' + id).then(function (data) {
-		if(raw) {
+		if (raw) {
 			return data;
 		}
 		return cache.getOrCreate(BeamUser, self, data);
