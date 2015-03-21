@@ -1,10 +1,18 @@
 'use strict';
 
+var Promise = require('bluebird');
+
 var BeamAPI = require('../base');
 var cache = require('../cache');
 var BeamChannel = require('../classes/channel');
 
-BeamAPI.prototype.getChannel = function (id, raw) {
+BeamAPI.prototype.getChannel = function (id, refresh, raw) {
+	if(!refresh) {
+		var data = cache.get(BeamChannel, id);
+		if(data) {
+			return Promise.resolve(data);
+		}
+	}
 	var self = this;
 	return this._userApiRequest('get', 'channels/' + id).then(function (data) {
 		if (raw) {

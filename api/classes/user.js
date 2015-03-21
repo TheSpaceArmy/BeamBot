@@ -26,7 +26,7 @@ BeamUser.prototype.getData = function () {
 		return Promise.resolve(this.data);
 	} else {
 		var self = this;
-		return this.api.getUser(this.id, true).then(function (data) {
+		return this.api.getUser(this.id, true, true).then(function (data) {
 			return setUserData(self, data, true);
 		});
 	}

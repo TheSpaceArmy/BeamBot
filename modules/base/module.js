@@ -7,8 +7,12 @@ function BaseModule () {
 }
 Module.inherit(BaseModule);
 
-BaseModule.prototype.init = function () {
-
+BaseModule.prototype.init = function (modules) {
+	modules.on('ChatMessage', function (msg) {
+		if(msg.getText() === 'T42') {
+			msg.reply('T99');
+		}
+	});
 };
 
 module.exports = BaseModule;

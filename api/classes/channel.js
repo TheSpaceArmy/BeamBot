@@ -26,7 +26,7 @@ BeamChannel.prototype.getData = function () {
 		return Promise.resolve(this.data);
 	} else {
 		var self = this;
-		return this.api.getChannel(this.id, true).then(function (data) {
+		return this.api.getChannel(this.id, true, true).then(function (data) {
 			return setChannelData(self, data, true);
 		});
 	}
