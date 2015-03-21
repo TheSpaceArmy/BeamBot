@@ -7,7 +7,7 @@ var cache = require('../cache');
 var BeamUser = require('../classes/user');
 
 BeamAPI.prototype.getCurrentUser = function (refresh) {
-	if(!refresh && this.currentUser) {
+	if (!refresh && this.currentUser) {
 		return Promise.resolve(this.currentUser);
 	}
 	var self = this;
@@ -19,9 +19,9 @@ BeamAPI.prototype.getCurrentUser = function (refresh) {
 };
 
 BeamAPI.prototype.getUser = function (id, refresh, raw) {
-	if(!refresh) {
-		var data = cache.get(BeamChannel, id);
-		if(data) {
+	if (!refresh) {
+		var data = cache.get(BeamUser, id);
+		if (data) {
 			return Promise.resolve(data);
 		}
 	}

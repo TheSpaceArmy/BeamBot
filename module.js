@@ -38,7 +38,7 @@ function loadModules () {
 		});
 		return modules;
 	});
-};
+}
 
 Module.prototype.init = function (/* ModuleManager */) {
 
@@ -69,18 +69,18 @@ Module.prototype.getChatAPI = function () {
 };
 
 //Modules collection
-function initAll (self, modules, filter, inits) {	
+function initAll (self, modules, filter, inits) {
 	_.forEach(filter, function (moduleName) {
 		var module = modules[moduleName];
-		if(module._isInitAll) {
+		if (module._isInitAll) {
 			console.error('Circular module dependency');
 			return;
 		}
 		module._isInitAll = true;
-		if(module.isInitialized) {
+		if (module.isInitialized) {
 			return;
 		}
-		if(module.dependencies && module.dependencies.length > 0) {
+		if (module.dependencies && module.dependencies.length > 0) {
 			initAll(modules, module.dependencies, inits);
 		}
 		inits.push(module.init(self));

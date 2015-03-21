@@ -9,7 +9,7 @@ Module.inherit(BaseModule);
 
 BaseModule.prototype.init = function (modules) {
 	modules.on('ChatMessage', function (msg) {
-		if(msg.getText() === 'T42') {
+		if (msg.getText() === 'T42') {
 			msg.reply('T99');
 		}
 	});

@@ -2,9 +2,6 @@
 
 var Promise = require('bluebird');
 
-var cache = require('./cache');
-var BeamUser = require('./classes/user');
-
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 

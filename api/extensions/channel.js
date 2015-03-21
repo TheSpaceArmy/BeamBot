@@ -7,9 +7,9 @@ var cache = require('../cache');
 var BeamChannel = require('../classes/channel');
 
 BeamAPI.prototype.getChannel = function (id, refresh, raw) {
-	if(!refresh) {
+	if (!refresh) {
 		var data = cache.get(BeamChannel, id);
-		if(data) {
+		if (data) {
 			return Promise.resolve(data);
 		}
 	}
