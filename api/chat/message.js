@@ -8,7 +8,7 @@ var BeamUser = require('../classes/user');
 function BeamChatMessage (chatAPI, data) {
 	this.chatAPI = chatAPI;
 	this.api = chatAPI.api;
-	this.baseAPIURL = 'chats/' + chatAPI.channelID + '/';
+	this.baseAPIURL = 'chats/' + chatAPI.channel.getId() + '/';
 
 	this.user = cache.getOrCreate(BeamUser, this.api, {
 		id: data.user_id,
