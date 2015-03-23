@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "node node_modules/gulp/bin/gulp lint",
-    "start": "node app"
+    "start": "node --harmony_proxies app"
   },
   "repository": {
     "type": "git",

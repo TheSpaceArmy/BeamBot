@@ -178,7 +178,11 @@ BeamChatAPI.prototype.connect = function () {
 					onWSData(self, JSON.parse(data.utf8Data));
 				});
 				announceConnection(self, true);
-				resolve(sendMethod(self, 'auth', [self.channel.getId(), self.api.currentUser.id, data.authkey], true));
+				resolve(sendMethod(self, 'auth', [
+					self.channel.getId(),
+					self.api.currentUser.getId(),
+					data.authkey
+				], true));
 			});
 			self.websocket.on('connectFailed', function (err) {
 				websocketReconnect(self);

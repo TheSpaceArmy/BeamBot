@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 
 var BeamAPI = require('../base');
 var cache = require('../cache');
-var BeamChannel = require('../classes/channel');
+var BeamChannel = require('../classes/BeamChannel');
 
 BeamAPI.prototype.getChannel = function (id, refresh, raw) {
 	if (!refresh) {

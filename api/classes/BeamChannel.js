@@ -3,22 +3,22 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 
-function setChannelData (self, data, isDownloaded) {
+function setChannelData (self, data) {
 	self.data = _.merge(self.data, data);
-	self.isDownloaded = !!isDownloaded;
+	self.isDownloaded = data.createdAt;
 	return self.data;
 }
 
-function BeamChannel (api, data, isDownloaded) {
+function BeamChannel (api, data) {
 	this.api = api;
 	this.data = {};
 	if (data) {
-		setChannelData(this, data, isDownloaded);
+		setChannelData(this, data);
 	}
 }
 
 BeamChannel.prototype.setData = function (data) {
-	return setChannelData(this, data, data.createdAt);
+	return setChannelData(this, data);
 };
 
 BeamChannel.prototype.getData = function () {

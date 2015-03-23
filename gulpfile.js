@@ -6,6 +6,7 @@ gulp.task('lint', function () {
         'api/**/*.js',
         'modules/**/*.js',
         'app.js',
+        'app_bot.js',
         'command.js',
         'module.js',
     ])

@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 
 var BeamAPI = require('../base');
 var cache = require('../cache');
-var BeamUser = require('../classes/user');
+var BeamUser = require('../classes/BeamUser');
 
 BeamAPI.prototype.getCurrentUser = function (refresh) {
 	if (!refresh && this.currentUser) {

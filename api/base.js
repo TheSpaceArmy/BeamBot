@@ -2,6 +2,9 @@
 
 var Promise = require('bluebird');
 
+var cache = require('./cache');
+var BeamUser = require('./classes/BeamUser');
+
 var API_ENDPOINT_BASE = '/api/v1/';
 var API_ADDRESS = 'https://beam.pro';
 
@@ -77,6 +80,7 @@ BeamAPI.prototype.login = function () {
 		password: this.password
 	}, true).then(function (data) {
 		self.isLoggedIn = true;
+		data = cache.getOrCreate(BeamUser, self, data);
 		self.currentUser = data;
 		return data;
 	}).catch(function (err) {

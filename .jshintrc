@@ -3,5 +3,6 @@
     "eqeqeq": true,
     "unused": true,
     "globalstrict": true,
-    "node": true
+    "node": true,
+    "globals": {"Proxy": false}
 }
