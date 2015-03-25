@@ -29,6 +29,10 @@ BeamBot.prototype.load = function () {
 		});
 	}).spread(function (config, modules, commands) {
 		self.chatAPI.on('ChatMessage', function (msg) {
+			if (msg.isMyOwn()) {
+				return;
+			}
+			
 			var msgText = msg.getText();
 			if (msgText.charAt(0) === '!') {
 				var cmdArgs = msgText.substr(1).trim().split(' ');

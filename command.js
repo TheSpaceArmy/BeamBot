@@ -10,10 +10,10 @@ function Command (defconfig) {
 		};
 	}
 
-	this.config = _.merge(defconfig, {
+	this.config = _.merge({
 		aliases: [],
 		enabled: true
-	});
+	}, defconfig);
 }
 
 Command.inherit = function (childCommand) {

@@ -14,10 +14,10 @@ function Module (defconfig) {
 		};
 	}
 
-	this.config = _.merge(defconfig, {
+	this.config = _.merge({
 		enabled: true,
 		dependencies: null
-	});
+	}, defconfig);
 }
 
 Module.inherit = function (childModule) {
@@ -68,6 +68,10 @@ Module.prototype.getChatAPI = function () {
 	return this.bot.chatAPI;
 };
 
+Module.prototype.getStoragePath = function () {
+	return process.cwd() + '/storage/' + this._idname;
+};
+
 //Modules collection
 function initAll (self, modules, filter, inits) {
 	_.forEach(filter, function (moduleName) {
@@ -101,14 +105,18 @@ ModuleManager.prototype.init = function () {
 	return Promise.all(initAll(this, this.modules, Object.keys(this.modules), []));
 };
 
-ModuleManager.getAll = function (config, bot) {
+ModuleManager.getAll = function (channelConfig, bot) {
 	var cmdInstances = {};
 	return loadModules().then(function (modules) {
 		var moduleInstances = {};
 		_.forEach(modules, function (Module, dir) {
 			var module = new Module();
-			if (config && config[dir]) {
-				module.setConfig(config[dir]);
+			module._idname = dir;
+			if (fs.existsSync('./config/modules/' + dir + '.js')) {
+				module.setConfig(require('./config/modules/' + dir));
+			}
+			if (channelConfig && channelConfig[dir]) {
+				module.setConfig(channelConfig[dir]);
 			}
 			if (bot) {
 				module.setBot(bot);
@@ -126,6 +134,7 @@ ModuleManager.getAll = function (config, bot) {
 				module.commands = commands;
 				cmdInstances = _.merge(cmdInstances, commands);
 			}));
+			res.push(fs.mkdirAsync(module.getStoragePath()).catch(function () { }));
 		});
 		return Promise.all(res).return([new ModuleManager(modules), cmdInstances]);
 	});
