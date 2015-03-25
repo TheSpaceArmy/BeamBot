@@ -30,10 +30,17 @@ Module.ctor = function (self, defconfig) {
 	return Module.apply(self, [defconfig]);
 };
 
-function loadModules () {
+function loadModules (isGlobalContext) {
 	return fs.readdirAsync('./modules/').then(function (files) {
 		var modules = {};
 		_.forEach(files, function (file) {
+			if (isGlobalContext) {
+				if (fs.existsSync('./modules/' + file + '/global.js')) {
+					modules[file] = require('./modules/' + file + '/global.js');
+				} else {
+					return;
+				}
+			}
 			modules[file] = require('./modules/' + file + '/module.js');
 		});
 		return modules;
@@ -105,9 +112,9 @@ ModuleManager.prototype.init = function () {
 	return Promise.all(initAll(this, this.modules, Object.keys(this.modules), []));
 };
 
-ModuleManager.getAll = function (channelConfig, bot) {
+ModuleManager.getAll = function (channelConfig, bot, isGlobalContext) {
 	var cmdInstances = {};
-	return loadModules().then(function (modules) {
+	return loadModules(isGlobalContext).then(function (modules) {
 		var moduleInstances = {};
 		_.forEach(modules, function (Module, dir) {
 			var module = new Module();
@@ -127,6 +134,10 @@ ModuleManager.getAll = function (channelConfig, bot) {
 		});
 		return moduleInstances;
 	}).then(function (modules) {
+		if (isGlobalContext) {
+			return new ModuleManager(modules);
+		}
+
 		var res = [];
 		_.forEach(modules, function (module, dir) {
 			res.push(Command.getAllForDir('./modules/' + dir + '/', module.config.commands, module)

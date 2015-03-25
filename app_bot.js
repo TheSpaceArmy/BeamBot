@@ -2,12 +2,13 @@
 
 var channelID = process.argv[2];
 
-var Promise = require('bluebird');
-
 var BeamBot = require('./bot');
 
-var apiCallbackHandlers = {};
-var apiCallbackID = 0;
+var Module = require('./module').Module;
+Module.prototype.xpcCall = function (prop) {
+	var args = Array.prototype.slice.apply(arguments, 1);
+	return xpc.send(this._idname, prop, args);
+};
 
 var apiData = {};
 var api = Proxy.create({
@@ -17,34 +18,14 @@ var api = Proxy.create({
 		}
 
 		return function () {
-			var callbackID = apiCallbackID++;
 			var args = Array.prototype.slice.apply(arguments);
-			return new Promise(function (resolve, reject) {
-				apiCallbackHandlers[callbackID] = {resolve: resolve, reject: reject};
-				process.send({id: callbackID, method: prop, args: args});
-			});
+			return xpc.send('api', prop, args);
 		};
 	}
 });
-process.on('message', function (message) {
-	var handler = apiCallbackHandlers[message.id];
-	if (!handler) {
-		return;
-	}
-	delete apiCallbackHandlers[message.id];
 
-	var data = message.data;
-	if (message.class) {
-		var Class = require('./api/classes/' + message.class);
-		data = new Class(api, message.data);
-	}
-
-	if (message.success) {
-		handler.resolve(data);
-	} else {
-		handler.reject(data);
-	}
-});
+var XPC = require('./xpchelper');
+var xpc = new XPC(api, process); //TODO: MODULES!
 
 api.getCurrentUser().then(function (user) {
 	apiData.currentUser = user;

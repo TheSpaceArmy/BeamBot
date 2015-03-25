@@ -9,6 +9,7 @@ gulp.task('lint', function () {
         'app_bot.js',
         'command.js',
         'module.js',
+        'xpchelper.js'
     ])
         .pipe($.jshint())
         .pipe($.jshint.reporter(require('jshint-stylish')))
