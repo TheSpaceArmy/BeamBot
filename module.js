@@ -80,8 +80,12 @@ Module.prototype.getStoragePath = function () {
 };
 
 Module.prototype.log = function (msg) {
-	console.log(this._isGlobalContext ? '[GlOBAL]' : '[C:' + this.bot.getChatAPI().channel.getId() + ']', '<' + this._idname + '>', msg);
-}
+	console.log(
+		this._isGlobalContext ? '[GlOBAL]' : '[C:' + this.bot.getChatAPI().channel.getId() + ']',
+		'<' + this._idname + '>',
+		msg
+	);
+};
 
 //Modules collection
 function initAll (self, modules, filter, inits) {
