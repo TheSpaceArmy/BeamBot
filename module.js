@@ -79,6 +79,10 @@ Module.prototype.getStoragePath = function () {
 	return process.cwd() + '/storage/' + this._idname;
 };
 
+Module.prototype.log = function (msg) {
+	console.log(this._isGlobalContext ? '[GlOBAL]' : '[C:' + this.bot.getChatAPI().channel.getId() + ']', '<' + this._idname + '>', msg);
+}
+
 //Modules collection
 function initAll (self, modules, filter, inits) {
 	_.forEach(filter, function (moduleName) {
@@ -92,9 +96,20 @@ function initAll (self, modules, filter, inits) {
 			return;
 		}
 		if (module.dependencies && module.dependencies.length > 0) {
-			initAll(modules, module.dependencies, inits);
+			inits = initAll(modules, module.dependencies, inits);
 		}
-		inits.push(module.init(self));
+		var init = module.init(self);
+		if (init && init.then) {
+			inits.push(init.then(function (ret) {
+				module.log('Initialized');
+				return ret;
+			}));
+		} else {
+			inits.push(new Promise(function (resolve) {
+				module.log('Initialized');
+				resolve();
+			}));
+		}
 		module.isInitialized = true;
 	});
 	return inits;
@@ -119,18 +134,20 @@ ModuleManager.getAll = function (channelConfig, bot, isGlobalContext) {
 		_.forEach(modules, function (Module, dir) {
 			var module = new Module();
 			module._idname = dir;
+			module._isGlobalContext = isGlobalContext;
 			if (fs.existsSync('./config/modules/' + dir + '.js')) {
 				module.setConfig(require('./config/modules/' + dir));
 			}
 			if (channelConfig && channelConfig[dir]) {
 				module.setConfig(channelConfig[dir]);
 			}
-			if (bot) {
+			if (!isGlobalContext) {
 				module.setBot(bot);
 			}
 			if (module.config.enabled) {
 				moduleInstances[dir] = module;
 			}
+			module.log('Loaded');
 		});
 		return moduleInstances;
 	}).then(function (modules) {

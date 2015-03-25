@@ -33,6 +33,7 @@ api.getCurrentUser().then(function (user) {
 	api.getChannel(channelID).then(function (channel) {
 		var bot = new BeamBot(api, channel);
 		bot.load().then(function () {
+			xpc = new XPC(api, process, bot.modules);
 			return bot.start();
 		}).then(function () {
 			console.log('Channel ' + channel.getId() + ' joined!');

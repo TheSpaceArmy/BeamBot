@@ -53,6 +53,7 @@ BeamBot.prototype.load = function () {
 			}
 		});
 
+		self.modules = modules;
 		return modules.init();
 	}).then(function () {
 		self.isLoaded = true;

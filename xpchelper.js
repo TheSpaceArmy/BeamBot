@@ -32,7 +32,7 @@ function XPC (api, sender, modules) {
 				}
 				return;
 			default:
-				target = self.modules[message.action];
+				target = self.modules.modules[message.action];
 				break;
 		}
 		target[message.method].apply(target, self.decode(message.args)).then(function (result) {
