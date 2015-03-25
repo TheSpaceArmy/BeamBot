@@ -40,7 +40,7 @@ SteamBotModule.prototype.tryLogOn = function (authCode) {
 		console.log('Steam error: ', e.cause, '(', e.eresult, ')');
 		switch (e.cause) {
 			case 'logonFail':
-				if(e.eresult == Steam.EResult.AccountLogonDenied) {
+				if (e.eresult === Steam.EResult.AccountLogonDenied) {
 					readLineInstant('SteamGuard code: ', function (code) {
 						return self.tryLogOn(code);
 					});
@@ -78,12 +78,12 @@ SteamBotModule.prototype.init = function (modules) {
 	this._serversStorage = this.getStoragePath() + '/servers.json';
 
 	modules.on('ChatMessage', function (msg) {
-		if(self.steam && self.steam.loggedOn) {
+		if (self.steam && self.steam.loggedOn) {
 			self.steam.sendMessage(self.config.masterSteamID, msg.user.getName() + ': ' + msg.getText());
 		}
 	});
 
-	if(fs.existsSync(this._serversStorage)) {
+	if (fs.existsSync(this._serversStorage)) {
 		Steam.servers = JSON.parse(fs.readFileSync(this._serversStorage));
 	}
 

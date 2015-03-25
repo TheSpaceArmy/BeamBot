@@ -37,8 +37,8 @@ BeamChatMessage.prototype.getText = function () {
 };
 
 BeamChatMessage.prototype.isMyOwn = function () {
-	return this.user.getId() == this.api.currentUser.getId();
-}
+	return this.user.getId() === this.api.currentUser.getId();
+};
 
 BeamChatMessage.prototype.delete = function () {
 	return this.api._userApiRequest('delete', this.baseAPIURL + 'message/' + this.id);
