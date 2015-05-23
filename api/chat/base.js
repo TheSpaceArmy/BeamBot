@@ -79,7 +79,7 @@ function onWSData (self, data) {
 	}
 }
 
-function sendMethod (self, method, args, expectsReply) {
+function sendMethod (self, method, args, noReply) {
 	var methodCallID = self.methodCallID++;
 	return sendData(self, {
 		type: 'method',
@@ -87,7 +87,7 @@ function sendMethod (self, method, args, expectsReply) {
 		arguments: args,
 		id: methodCallID
 	}).then(function () {
-		if (expectsReply) {
+		if (!noReply) {
 			return new Promise(function (resolve, reject) {
 				self.methodsWaitingForReply[methodCallID] = function (data) {
 					if (data.error) {
@@ -182,7 +182,7 @@ BeamChatAPI.prototype.connect = function () {
 					self.channel.getId(),
 					self.api.currentUser.getId(),
 					data.authkey
-				], true));
+				]));
 			});
 			self.websocket.on('connectFailed', function (err) {
 				websocketReconnect(self);
