@@ -53,8 +53,13 @@ BeamChatAPI.prototype.onReplyError = function (callback) {
 function onWSData (self, data) {
 	switch (data.type) {
 		case 'reply':
-			if (self.methodsWaitingForReply[data.id]) {
-				self.methodsWaitingForReply[data.id](data);
+			var methodPromise = self.methodsWaitingForReply[data.id];
+			if (methodPromise) {
+				if (data.error) {
+					methodPromise.reject(data.error);
+				} else {
+					methodPromise.resolve(data.data);
+				}
 				delete self.methodsWaitingForReply[data.id];
 			} else {
 				if (data.error) {
@@ -89,13 +94,7 @@ function sendMethod (self, method, args, noReply) {
 	}).then(function () {
 		if (!noReply) {
 			return new Promise(function (resolve, reject) {
-				self.methodsWaitingForReply[methodCallID] = function (data) {
-					if (data.error) {
-						reject(data.error);
-					} else {
-						resolve(data.data);
-					}
-				};
+				self.methodsWaitingForReply[methodCallID] = {resolve: resolve, reject: reject};
 			});
 		}
 	});
